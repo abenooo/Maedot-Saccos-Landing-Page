@@ -1229,21 +1229,30 @@ const Footer = ({ lang }: { lang: Language }) => {
           </div>
           
           <div>
-            <h4 className="font-bold text-background mb-6">{t.solutions}</h4>
-            <ul className="space-y-3 text-sm">
-              <li><a href="#" className="hover:text-primary transition-colors">{t.fixed_deposits}</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">{t.business_loans}</a></li>
+            <h4 className="font-bold text-background mb-6">{t.loan_types}</h4>
+            <ul className="space-y-2 text-sm">
+              <li><a href="#" className="hover:text-primary transition-colors">{t.development_loans}</a></li>
               <li><a href="#" className="hover:text-primary transition-colors">{t.emergency_loans}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.education_loans}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.business_loans}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.agricultural_loans}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.asset_financing}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.mortgage_loans}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.personal_loans}</a></li>
             </ul>
           </div>
           
           <div>
             <h4 className="font-bold text-background mb-6">{t.savings_types}</h4>
-            <ul className="space-y-3 text-sm">
-              <li><a href="#" className="hover:text-primary transition-colors">{t.voluntary_savings}</a></li>
+            <ul className="space-y-2 text-sm">
               <li><a href="#" className="hover:text-primary transition-colors">{t.compulsory_savings}</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">{t.child_savings}</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">{t.time_deposit}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.voluntary_savings}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.fixed_deposits}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.children_savings}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.medical_savings}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.retirement_savings}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.holiday_savings}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.group_savings}</a></li>
             </ul>
           </div>
         </div>
