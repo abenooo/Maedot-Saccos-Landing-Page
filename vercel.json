@@ -4,28 +4,36 @@
     {
       "src": "dist/index.cjs",
       "use": "@vercel/node"
+    },
+    {
+      "src": "dist/public/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "dist/index.cjs"
-    },
-    {
       "src": "/assets/(.*)",
-      "dest": "dist/public/assets/$1"
+      "dest": "/dist/public/assets/$1"
     },
     {
       "src": "/attached_assets/(.*)",
-      "dest": "dist/public/attached_assets/$1"
+      "dest": "/dist/public/attached_assets/$1"
     },
     {
       "src": "/favicon.png",
-      "dest": "dist/public/favicon.png"
+      "dest": "/dist/public/favicon.png"
+    },
+    {
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot))",
+      "dest": "/dist/public/$1"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/dist/index.cjs"
     },
     {
       "src": "/(.*)",
-      "dest": "dist/index.cjs"
+      "dest": "/dist/index.cjs"
     }
   ],
   "headers": [
