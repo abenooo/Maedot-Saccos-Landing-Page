@@ -246,11 +246,6 @@ const Services = () => {
                   <p className="text-muted-foreground leading-relaxed">
                     {service.description}
                   </p>
-                  
-                  {/* Decorative faint background number */}
-                  <div className="absolute -bottom-4 -right-4 text-9xl font-bold text-black/5 select-none z-0">
-                    {index + 1}
-                  </div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -370,8 +365,19 @@ const SignupSteps = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-          {/* Connector Line (Desktop) */}
-          <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent z-0 border-t-2 border-dashed border-white/20"></div>
+          {/* Connector Line (Desktop) - Curved SVG */}
+          <div className="hidden md:block absolute top-12 left-0 w-full h-24 z-0 pointer-events-none">
+            <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1000 100">
+              <path 
+                d="M 166 50 C 333 50, 333 80, 500 50 C 666 20, 666 50, 833 50" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeDasharray="8 8" 
+                className="text-primary/30"
+              />
+            </svg>
+          </div>
 
           {steps.map((step, index) => (
             <div key={index} className="relative z-10 flex flex-col items-center text-center">
