@@ -12,7 +12,17 @@ import {
   PiggyBank, 
   X,
   ArrowRight,
-  CheckCircle2
+  CheckCircle2,
+  Users,
+  Smartphone,
+  Heart,
+  Briefcase,
+  GraduationCap,
+  ShieldAlert,
+  Clock,
+  ThumbsUp,
+  Percent,
+  Plus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,11 +33,28 @@ import {
 } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
 
 // Import generated assets
 import heroImage from "@assets/generated_images/modern_addis_ababa_cityscape_with_financial_growth_overlay.png";
 import familyImage from "@assets/generated_images/happy_ethiopian_family_in_front_of_a_modern_home.png";
-import carImage from "@assets/generated_images/modern_electric_car_on_the_road_in_ethiopia.png";
+import shopOwnerImage from "@assets/generated_images/portrait_of_a_successful_ethiopian_female_shop_owner.png";
+import fatherDaughterImage from "@assets/generated_images/portrait_of_a_happy_ethiopian_father_and_daughter.png";
+import mobileBankingImage from "@assets/generated_images/close_up_of_hands_using_mobile_banking_app_on_smartphone.png";
+
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -42,8 +69,9 @@ const Navbar = () => {
   const navLinks = [
     { name: "Home", href: "#" },
     { name: "Services", href: "#services" },
-    { name: "Vehicle Loan", href: "#vehicle-loan" },
-    { name: "About Us", href: "#about" },
+    { name: "Benefits", href: "#benefits" },
+    { name: "Stories", href: "#stories" },
+    { name: "FAQ", href: "#faq" },
     { name: "Contact", href: "#contact" },
   ];
 
@@ -51,7 +79,6 @@ const Navbar = () => {
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/90 backdrop-blur-md shadow-sm py-4" : "bg-transparent py-6"}`}>
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          {/* Logo Placeholder */}
           <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl">
             M
           </div>
@@ -108,7 +135,7 @@ const Navbar = () => {
 
 const Hero = () => {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <img 
@@ -116,38 +143,48 @@ const Hero = () => {
           alt="Addis Ababa Cityscape" 
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/20" />
       </div>
 
       <div className="container mx-auto px-4 md:px-6 relative z-10 pt-20">
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="max-w-2xl text-white"
+          className="max-w-3xl"
         >
-          <div className="inline-block px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-6">
-            <span className="text-primary font-bold text-sm tracking-wide uppercase">Transforming Together</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/20 backdrop-blur-sm rounded-full border border-primary/30 mb-6">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            <span className="text-primary-foreground font-bold text-sm tracking-wide uppercase">Transforming Together</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-heading font-bold mb-6 leading-tight">
-            Building Your <span className="text-primary">Financial</span> Future.
+          <h1 className="text-5xl md:text-7xl font-heading font-bold mb-6 leading-tight text-white">
+            Grow Your Savings.<br/>
+            <span className="text-primary">Secure Your Future.</span>
           </h1>
-          <p className="text-lg md:text-xl text-white/80 mb-8 leading-relaxed max-w-lg">
-            Maedot Saving & Credit Cooperatives Society LTD is your partner in growth. Secure savings, accessible loans, and a community dedicated to success.
+          <p className="text-lg md:text-xl text-white/80 mb-8 leading-relaxed max-w-xl">
+            Join Maedot Saccos today for secure savings, affordable loans, and a community that supports your financial growth.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-8 h-12 text-base">
-              Become a Member
+            <Button size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-8 h-14 text-lg font-semibold shadow-lg shadow-primary/20 transition-all hover:scale-105">
+              Join Maedot Today
             </Button>
-            <Button variant="outline" size="lg" className="bg-white/10 hover:bg-white/20 text-white border-white/30 rounded-full px-8 h-12 text-base backdrop-blur-sm">
-              Explore Services
+            <Button variant="outline" size="lg" className="bg-white/5 hover:bg-white/10 text-white border-white/20 rounded-full px-8 h-14 text-lg font-medium backdrop-blur-sm transition-all">
+              Explore Our Services
             </Button>
+          </div>
+          
+          <div className="mt-12 flex items-center gap-8 text-white/60 text-sm font-medium">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-primary" />
+              <span>Licensed & Regulated</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Users className="w-5 h-5 text-primary" />
+              <span>5,000+ Members</span>
+            </div>
           </div>
         </motion.div>
       </div>
-
-      {/* Abstract Shape */}
-      <div className="absolute bottom-0 right-0 w-1/3 h-1/3 bg-primary/20 blur-[100px] rounded-full" />
     </section>
   );
 };
@@ -155,24 +192,28 @@ const Hero = () => {
 const Services = () => {
   const services = [
     {
-      icon: <PiggyBank className="w-10 h-10 text-primary" />,
-      title: "Smart Savings",
-      description: "Secure your future with our competitive interest rates and flexible saving plans tailored to your goals."
+      icon: <PiggyBank className="w-10 h-10 text-white" />,
+      title: "High-Yield Savings",
+      description: "Watch your money grow with our competitive interest rates on regular and fixed deposits.",
+      color: "bg-blue-500"
     },
     {
-      icon: <CreditCard className="w-10 h-10 text-primary" />,
-      title: "Business Loans",
-      description: "Fuel your business growth with our accessible credit facilities designed for entrepreneurs."
+      icon: <Briefcase className="w-10 h-10 text-white" />,
+      title: "Flexible Loans",
+      description: "Access loans for Business, School Fees, Emergencies, and Housing with quick approval.",
+      color: "bg-primary"
     },
     {
-      icon: <Car className="w-10 h-10 text-primary" />,
-      title: "Vehicle Financing",
-      description: "Drive your dream car today with our specialized auto loan packages and insurance options."
+      icon: <Heart className="w-10 h-10 text-white" />,
+      title: "Member Welfare",
+      description: "We support our community in times of need with dedicated social welfare funds.",
+      color: "bg-green-500"
     },
     {
-      icon: <HomeIcon className="w-10 h-10 text-primary" />,
-      title: "Housing Solutions",
-      description: "Make home ownership a reality with our long-term housing finance strategies."
+      icon: <Smartphone className="w-10 h-10 text-white" />,
+      title: "Mobile Banking",
+      description: "Manage your account anytime, anywhere via our Mobile App and USSD code access.",
+      color: "bg-purple-500"
     }
   ];
 
@@ -181,9 +222,9 @@ const Services = () => {
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="text-primary font-bold tracking-wider uppercase text-sm mb-3">Our Services</h2>
-          <h3 className="text-4xl font-heading font-bold text-foreground mb-4">Comprehensive Financial Solutions</h3>
-          <p className="text-muted-foreground">
-            We offer a wide range of services designed to meet the diverse needs of our members.
+          <h3 className="text-4xl font-heading font-bold text-foreground mb-4">Everything You Need to Succeed</h3>
+          <p className="text-muted-foreground text-lg">
+            Comprehensive financial solutions tailored to your life stage and goals.
           </p>
         </div>
 
@@ -196,18 +237,20 @@ const Services = () => {
               transition={{ delay: index * 0.1, duration: 0.5 }}
               viewport={{ once: true }}
             >
-              <Card className="h-full border-none shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <CardContent className="p-8 flex flex-col items-start gap-4">
-                  <div className="p-3 bg-primary/10 rounded-2xl mb-2">
+              <Card className="h-full border-none shadow-md hover:shadow-xl transition-all duration-300 group overflow-hidden">
+                <CardContent className="p-8 flex flex-col items-start gap-4 h-full relative z-10">
+                  <div className={`p-4 rounded-2xl mb-2 shadow-lg ${service.color} group-hover:scale-110 transition-transform duration-300`}>
                     {service.icon}
                   </div>
-                  <h4 className="text-xl font-bold text-foreground">{service.title}</h4>
+                  <h4 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">{service.title}</h4>
                   <p className="text-muted-foreground leading-relaxed">
                     {service.description}
                   </p>
-                  <a href="#" className="mt-auto flex items-center text-primary font-medium hover:underline text-sm">
-                    Learn more <ChevronRight className="w-4 h-4 ml-1" />
-                  </a>
+                  
+                  {/* Decorative faint background number */}
+                  <div className="absolute -bottom-4 -right-4 text-9xl font-bold text-black/5 select-none z-0">
+                    {index + 1}
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -218,103 +261,228 @@ const Services = () => {
   );
 };
 
-const FeatureCar = () => {
-  return (
-    <section id="vehicle-loan" className="py-24 overflow-hidden">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-          <motion.div 
-            className="lg:w-1/2 relative"
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl">
-              <img src={carImage} alt="Electric Vehicle" className="w-full h-auto" />
-            </div>
-            {/* Decorative elements */}
-            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/10 rounded-full blur-2xl" />
-            <div className="absolute -top-10 -right-10 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl" />
-          </motion.div>
+const WhyChooseUs = () => {
+  const benefits = [
+    {
+      icon: <Percent className="w-6 h-6 text-primary" />,
+      title: "Low Loan Interest Rates",
+      description: "We offer some of the most competitive rates in the market to help you afford more."
+    },
+    {
+      icon: <Clock className="w-6 h-6 text-primary" />,
+      title: "Fast Loan Approval",
+      description: "Get access to funds when you need them most with our streamlined approval process."
+    },
+    {
+      icon: <Users className="w-6 h-6 text-primary" />,
+      title: "Community Support",
+      description: "Join a network of like-minded individuals building wealth together."
+    },
+    {
+      icon: <ShieldAlert className="w-6 h-6 text-primary" />,
+      title: "Secure & Regulated",
+      description: "Your deposits are safe, insured, and managed by experienced professionals."
+    }
+  ];
 
-          <motion.div 
-            className="lg:w-1/2"
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <div className="inline-block px-3 py-1 bg-primary/10 rounded-full text-primary font-medium text-sm mb-6">
-              Featured Product
-            </div>
-            <h2 className="text-4xl md:text-5xl font-heading font-bold text-foreground mb-6">
-              Drive the Future with Our Vehicle Loans
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-              Upgrade your lifestyle with our specialized vehicle financing. Whether it's for personal use or business logistics, we help you get behind the wheel faster.
+  return (
+    <section id="benefits" className="py-24 bg-white relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
+      
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <div className="flex flex-col lg:flex-row items-center gap-16">
+          <div className="lg:w-1/2">
+            <h2 className="text-primary font-bold tracking-wider uppercase text-sm mb-3">Why Choose Maedot</h2>
+            <h3 className="text-4xl md:text-5xl font-heading font-bold text-foreground mb-6">
+              More Than Just a <br/> Financial Institution
+            </h3>
+            <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
+              We are a cooperative society built on trust, transparency, and mutual growth. Unlike traditional banks, our members are our owners, meaning every decision we make is for your benefit.
             </p>
             
-            <ul className="space-y-4 mb-8">
-              {[
-                "Low down payment options",
-                "Competitive interest rates",
-                "Flexible repayment periods up to 5 years",
-                "Quick approval process"
-              ].map((item, i) => (
-                <li key={i} className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-foreground/80">{item}</span>
-                </li>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {benefits.map((benefit, index) => (
+                <div key={index} className="flex gap-4 items-start p-4 rounded-xl hover:bg-secondary/50 transition-colors border border-transparent hover:border-border">
+                  <div className="p-2 bg-primary/10 rounded-lg shrink-0">
+                    {benefit.icon}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-foreground mb-1">{benefit.title}</h4>
+                    <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                  </div>
+                </div>
               ))}
-            </ul>
-
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-8">
-              Apply for Auto Loan
-            </Button>
-          </motion.div>
+            </div>
+          </div>
+          
+          <div className="lg:w-1/2 relative">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border-8 border-white">
+              <img src={mobileBankingImage} alt="Mobile Banking Convenience" className="w-full h-auto transform hover:scale-105 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
+                <div className="text-white">
+                  <p className="font-bold text-xl">Digital Access</p>
+                  <p className="text-white/80 text-sm">Manage finances from your phone</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Floating badge */}
+            <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-xl border border-gray-100 max-w-[200px]">
+              <div className="flex items-center gap-2 mb-2">
+                <ThumbsUp className="w-5 h-5 text-primary fill-primary" />
+                <span className="font-bold text-foreground">Top Rated</span>
+              </div>
+              <p className="text-xs text-muted-foreground">Voted best emerging Sacco in Addis Ababa for customer service.</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   );
 };
 
-const About = () => {
+const SignupSteps = () => {
+  const steps = [
+    {
+      num: "01",
+      title: "Register",
+      description: "Visit our office or download our app to fill out the membership form."
+    },
+    {
+      num: "02",
+      title: "Deposit",
+      description: "Pay the registration fee and make your initial minimum deposit."
+    },
+    {
+      num: "03",
+      title: "Enjoy",
+      description: "Get your passbook, access mobile banking, and start saving!"
+    }
+  ];
+
   return (
-    <section id="about" className="py-24 bg-foreground text-white relative overflow-hidden">
-      <div className="absolute inset-0 z-0 opacity-20">
-        <img src={familyImage} alt="Community" className="w-full h-full object-cover" />
-      </div>
-      <div className="absolute inset-0 bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 z-0" />
-      
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-12">
-          <div className="md:w-1/2">
-            <h2 className="text-primary font-bold tracking-wider uppercase text-sm mb-3">About Maedot</h2>
-            <h3 className="text-4xl md:text-5xl font-heading font-bold mb-6">Transforming Lives, <br/>Building Communities.</h3>
-            <p className="text-white/70 text-lg leading-relaxed mb-8">
-              Maedot Saving & Credit Cooperatives Society LTD was founded with a simple yet powerful mission: to empower our members through financial inclusion. We believe that by pooling our resources, we can achieve individual dreams and collective prosperity.
-            </p>
-            <div className="grid grid-cols-2 gap-8">
-              <div>
-                <h4 className="text-4xl font-bold text-white mb-2">5K+</h4>
-                <p className="text-white/60">Active Members</p>
-              </div>
-              <div>
-                <h4 className="text-4xl font-bold text-white mb-2">150M+</h4>
-                <p className="text-white/60">Capital Mobilized</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="md:w-1/2 flex justify-center md:justify-end">
-             <Card className="w-full max-w-md bg-white/5 backdrop-blur-md border-white/10 p-2">
-                <CardContent className="p-0">
-                  <img src={familyImage} alt="Happy Family" className="w-full h-auto rounded-lg shadow-2xl" />
-                </CardContent>
-             </Card>
-          </div>
+    <section className="py-24 bg-foreground text-white">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-primary font-bold tracking-wider uppercase text-sm mb-3">Join Us Today</h2>
+          <h3 className="text-3xl md:text-4xl font-heading font-bold mb-4">Become a Member in 3 Simple Steps</h3>
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+          {/* Connector Line (Desktop) */}
+          <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-white/10 z-0"></div>
+
+          {steps.map((step, index) => (
+            <div key={index} className="relative z-10 flex flex-col items-center text-center">
+              <div className="w-24 h-24 bg-secondary/10 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center text-3xl font-bold text-primary mb-6 shadow-lg shadow-black/20">
+                {step.num}
+              </div>
+              <h4 className="text-xl font-bold mb-3">{step.title}</h4>
+              <p className="text-white/60 max-w-xs">{step.description}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-16 text-center">
+          <Button size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-10 h-14 text-lg">
+            Download Application Form
+          </Button>
+          <p className="mt-4 text-sm text-white/40">
+            Have questions? Call us at <span className="text-primary cursor-pointer hover:underline">+251-0903373727</span>
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const Testimonials = () => {
+  return (
+    <section id="stories" className="py-24 bg-secondary/30">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-primary font-bold tracking-wider uppercase text-sm mb-3">Member Stories</h2>
+          <h3 className="text-3xl md:text-4xl font-heading font-bold mb-4">Real Impact, Real People</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <Card className="border-none shadow-lg">
+            <CardContent className="p-8">
+              <div className="flex gap-1 mb-4">
+                {[1,2,3,4,5].map(i => <ThumbsUp key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />)}
+              </div>
+              <p className="text-muted-foreground text-lg italic mb-6">
+                "The business loan from Maedot allowed me to expand my textile shop. The interest rate was manageable, and the process was so fast. I've doubled my inventory in just 6 months!"
+              </p>
+              <div className="flex items-center gap-4">
+                <img src={shopOwnerImage} alt="Shop Owner" className="w-12 h-12 rounded-full object-cover border-2 border-primary" />
+                <div>
+                  <h4 className="font-bold text-foreground">Tigist Alemu</h4>
+                  <p className="text-xs text-muted-foreground">Small Business Owner</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-none shadow-lg">
+            <CardContent className="p-8">
+              <div className="flex gap-1 mb-4">
+                {[1,2,3,4,5].map(i => <ThumbsUp key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />)}
+              </div>
+              <p className="text-muted-foreground text-lg italic mb-6">
+                "Paying for my daughter's university fees was stressing me out. The school fee loan gave me peace of mind. The repayment plan is very flexible for my salary."
+              </p>
+              <div className="flex items-center gap-4">
+                <img src={fatherDaughterImage} alt="Parent" className="w-12 h-12 rounded-full object-cover border-2 border-primary" />
+                <div>
+                  <h4 className="font-bold text-foreground">Abebe Kebede</h4>
+                  <p className="text-xs text-muted-foreground">Teacher & Parent</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const FAQ = () => {
+  return (
+    <section id="faq" className="py-24 bg-white">
+      <div className="container mx-auto px-4 md:px-6 max-w-4xl">
+        <div className="text-center mb-12">
+          <h2 className="text-primary font-bold tracking-wider uppercase text-sm mb-3">FAQ</h2>
+          <h3 className="text-3xl md:text-4xl font-heading font-bold mb-4">Frequently Asked Questions</h3>
+        </div>
+
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="item-1">
+            <AccordionTrigger className="text-lg font-medium">How do I become a member?</AccordionTrigger>
+            <AccordionContent className="text-muted-foreground text-base">
+              To become a member, simply visit our office with a valid ID and passport-sized photos. Fill out the application form, pay the registration fee, and make your initial deposit.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-2">
+            <AccordionTrigger className="text-lg font-medium">What is the minimum saving amount?</AccordionTrigger>
+            <AccordionContent className="text-muted-foreground text-base">
+              We have flexible saving plans. Our regular savings account requires a minimum monthly contribution of 500 ETB, but you can save more as your capacity grows.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-3">
+            <AccordionTrigger className="text-lg font-medium">How long does loan processing take?</AccordionTrigger>
+            <AccordionContent className="text-muted-foreground text-base">
+              For emergency loans, processing can be done within 24 hours. Business and other larger loans typically take 3-5 working days after all documentation is submitted.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-4">
+            <AccordionTrigger className="text-lg font-medium">Can I access my money online?</AccordionTrigger>
+            <AccordionContent className="text-muted-foreground text-base">
+              Yes! We offer USSD mobile banking and a mobile app where you can check your balance, transfer funds, and even apply for small loans.
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
     </section>
   );
@@ -322,62 +490,75 @@ const About = () => {
 
 const Contact = () => {
   return (
-    <section id="contact" className="py-24 bg-white">
+    <section id="contact" className="py-24 bg-secondary/20">
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           <div>
-            <h2 className="text-4xl font-heading font-bold text-foreground mb-6">Get in Touch</h2>
+            <h2 className="text-4xl font-heading font-bold text-foreground mb-6">Visit Our Office</h2>
             <p className="text-muted-foreground mb-8 text-lg">
-              Ready to start your financial journey? Contact us today or visit our office.
+              We are always here to help. Drop by for a coffee and let's discuss your financial goals.
             </p>
             
-            <div className="space-y-6">
+            <div className="space-y-8">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary flex-shrink-0">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary shadow-sm border border-gray-100 flex-shrink-0">
                   <Phone className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-foreground mb-1">Call Us</h4>
+                  <h4 className="font-bold text-foreground mb-1 text-lg">Phone Support</h4>
                   <p className="text-muted-foreground">+251-0903373727</p>
                   <p className="text-muted-foreground">+251-111111111</p>
                 </div>
               </div>
               
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary flex-shrink-0">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary shadow-sm border border-gray-100 flex-shrink-0">
                   <Building2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-foreground mb-1">Visit Us</h4>
+                  <h4 className="font-bold text-foreground mb-1 text-lg">Office Location</h4>
                   <p className="text-muted-foreground">Addis Ababa, Ethiopia</p>
-                  <p className="text-muted-foreground">Maedot Saccos HQ</p>
+                  <p className="text-muted-foreground">Maedot Saccos HQ, Bole Road</p>
+                </div>
+              </div>
+
+               <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary shadow-sm border border-gray-100 flex-shrink-0">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-foreground mb-1 text-lg">Working Hours</h4>
+                  <p className="text-muted-foreground">Mon - Fri: 8:00 AM - 5:00 PM</p>
+                  <p className="text-muted-foreground">Sat: 8:00 AM - 12:00 PM</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <Card className="shadow-xl border-none">
+          <Card className="shadow-2xl border-none">
+            <div className="h-2 bg-primary w-full"></div>
             <CardContent className="p-8">
+              <h3 className="text-2xl font-bold mb-6">Send us a Message</h3>
               <form className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground">First Name</label>
-                    <Input placeholder="John" />
+                    <Input placeholder="John" className="h-11" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground">Last Name</label>
-                    <Input placeholder="Doe" />
+                    <Input placeholder="Doe" className="h-11" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Email</label>
-                  <Input type="email" placeholder="john@example.com" />
+                  <label className="text-sm font-medium text-foreground">Phone Number</label>
+                  <Input type="tel" placeholder="+251..." className="h-11" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-foreground">Message</label>
                   <Textarea placeholder="How can we help you?" className="min-h-[120px]" />
                 </div>
-                <Button className="w-full bg-primary hover:bg-primary/90 text-white h-12 text-base">
+                <Button className="w-full bg-primary hover:bg-primary/90 text-white h-12 text-base font-semibold">
                   Send Message
                 </Button>
               </form>
@@ -391,60 +572,75 @@ const Contact = () => {
 
 const Footer = () => {
   return (
-    <footer className="bg-secondary pt-16 pb-8">
+    <footer className="bg-foreground text-white/80 pt-20 pb-10">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center text-white font-bold">
+              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl">
                 M
               </div>
-              <span className="font-heading font-bold text-lg text-foreground">Maedot</span>
+              <div className="flex flex-col">
+                <span className="font-heading font-bold text-xl leading-none text-white">Maedot</span>
+                <span className="text-[10px] uppercase tracking-widest text-white/60">Saccos</span>
+              </div>
             </div>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Transforming Together. Your trusted partner for savings, credit, and financial growth in Ethiopia.
+            <p className="text-sm leading-relaxed mb-6 max-w-xs">
+              Empowering our community through financial inclusion. Join us to save securely and borrow wisely.
             </p>
+            <div className="flex gap-4">
+              {/* Social Placeholders */}
+              <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-primary transition-colors cursor-pointer">
+                <span className="sr-only">Facebook</span>
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+              </div>
+              <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-primary transition-colors cursor-pointer">
+                <span className="sr-only">Telegram</span>
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M21.928 2.522c-0.198-0.088-0.418-0.108-0.628-0.054-0.128 0.032-0.254 0.088-0.372 0.166l-18.428 12.022c-0.284 0.186-0.456 0.496-0.456 0.836 0 0.342 0.174 0.654 0.458 0.84l4.472 2.924c0.186 0.122 0.404 0.186 0.626 0.186 0.136 0 0.27-0.024 0.4-0.074l13.928-5.572c0.23-0.092 0.384-0.316 0.384-0.564s-0.154-0.472-0.384-0.564l-12.028-4.812c-0.286-0.114-0.61-0.028-0.796 0.214s-0.15 0.584 0.086 0.82l6.028 6.028c0.116 0.116 0.182 0.274 0.182 0.438v3.428c0 0.34-0.172 0.65-0.454 0.836-0.284 0.186-0.636 0.186-0.92 0-0.282-0.186-0.454-0.496-0.454-0.836v-2.028l-2.028-2.028c-0.236-0.236-0.618-0.236-0.854 0s-0.236 0.618 0 0.854l3.428 3.428c0.236 0.236 0.618 0.236 0.854 0s0.236-0.618 0-0.854v-3.428c0-0.164-0.066-0.322-0.182-0.438l-4.606-4.606 9.606-3.842 2.924-1.168z"></path></svg>
+              </div>
+            </div>
           </div>
           
           <div>
-            <h4 className="font-bold text-foreground mb-4">Quick Links</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-primary transition-colors">Home</a></li>
-              <li><a href="#about" className="hover:text-primary transition-colors">About Us</a></li>
-              <li><a href="#services" className="hover:text-primary transition-colors">Services</a></li>
-              <li><a href="#contact" className="hover:text-primary transition-colors">Contact</a></li>
+            <h4 className="font-bold text-white mb-6">Company</h4>
+            <ul className="space-y-3 text-sm">
+              <li><a href="#" className="hover:text-primary transition-colors">About Us</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">Our Team</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">Careers</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li>
             </ul>
           </div>
           
           <div>
-            <h4 className="font-bold text-foreground mb-4">Services</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-primary transition-colors">Savings Account</a></li>
+            <h4 className="font-bold text-white mb-6">Solutions</h4>
+            <ul className="space-y-3 text-sm">
+              <li><a href="#" className="hover:text-primary transition-colors">Fixed Deposits</a></li>
               <li><a href="#" className="hover:text-primary transition-colors">Business Loans</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Car Loans</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Housing Finance</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">Emergency Loans</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">School Fee Loans</a></li>
             </ul>
           </div>
           
           <div>
-            <h4 className="font-bold text-foreground mb-4">Newsletter</h4>
-            <p className="text-muted-foreground text-sm mb-4">Subscribe to our newsletter for updates.</p>
-            <div className="flex gap-2">
-              <Input placeholder="Email address" className="bg-white" />
-              <Button size="icon" className="bg-primary hover:bg-primary/90 text-white shrink-0">
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+            <h4 className="font-bold text-white mb-6">Partners</h4>
+            <div className="grid grid-cols-2 gap-4 opacity-50">
+               {/* Placeholders for partner logos */}
+               <div className="h-8 bg-white/20 rounded"></div>
+               <div className="h-8 bg-white/20 rounded"></div>
+               <div className="h-8 bg-white/20 rounded"></div>
+               <div className="h-8 bg-white/20 rounded"></div>
             </div>
           </div>
         </div>
         
-        <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-muted-foreground text-center md:text-left">
-            © {new Date().getFullYear()} Maedot Saving & Credit Cooperatives Society LTD. All rights reserved.
+        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-xs text-center md:text-left opacity-60">
+            © {new Date().getFullYear()} Maedot Saving & Credit Cooperatives Society LTD. Regulated by Federal Cooperative Agency.
           </p>
-          <div className="flex gap-4 text-xs text-muted-foreground">
-            <a href="#" className="hover:text-primary">Privacy Policy</a>
-            <a href="#" className="hover:text-primary">Terms of Service</a>
+          <div className="flex gap-6 text-xs opacity-60">
+            <a href="#" className="hover:text-primary hover:opacity-100 transition-all">Terms</a>
+            <a href="#" className="hover:text-primary hover:opacity-100 transition-all">Privacy</a>
+            <a href="#" className="hover:text-primary hover:opacity-100 transition-all">Sitemap</a>
           </div>
         </div>
       </div>
@@ -458,8 +654,10 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Services />
-      <FeatureCar />
-      <About />
+      <WhyChooseUs />
+      <SignupSteps />
+      <Testimonials />
+      <FAQ />
       <Contact />
       <Footer />
     </div>
