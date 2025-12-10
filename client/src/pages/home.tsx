@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring, useInView } from "framer-motion";
 import { 
   Building2, 
   Car, 
-  ChevronRight, 
+  ChevronRight,
+  ChevronDown,
   CreditCard, 
   Home as HomeIcon, 
   Menu, 
@@ -61,22 +62,56 @@ type Language = "en" | "am" | "om";
 
 const Navbar = ({ lang, setLang }: { lang: Language, setLang: (l: Language) => void }) => {
   const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
   const t = translations[lang].nav;
 
-  // Add scroll listener
-  if (typeof window !== "undefined") {
-    window.addEventListener("scroll", () => {
+  useEffect(() => {
+    const handleScroll = () => {
       setScrolled(window.scrollY > 20);
-    });
-  }
+      
+      // Define sections with their IDs and offset
+      const sections = [
+        { id: "home", offset: 0 },
+        { id: "services", element: document.getElementById("services") },
+        { id: "benefits", element: document.getElementById("benefits") },
+        { id: "stories", element: document.getElementById("stories") },
+        { id: "faq", element: document.getElementById("faq") },
+        { id: "contact", element: document.getElementById("contact") }
+      ];
+
+      // Get current scroll position
+      const scrollPosition = window.scrollY + 100; // offset for better UX
+
+      // Check if we're at the top (home)
+      if (window.scrollY < 300) {
+        setActiveSection("home");
+        return;
+      }
+
+      // Find which section is currently in view
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (section.element) {
+          const offsetTop = section.element.offsetTop;
+          if (scrollPosition >= offsetTop) {
+            setActiveSection(section.id);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const navLinks = [
-    { name: t.home, href: "#" },
-    { name: t.services, href: "#services" },
-    { name: t.benefits, href: "#benefits" },
-    { name: t.stories, href: "#stories" },
-    { name: t.faq, href: "#faq" },
-    { name: t.contact, href: "#contact" },
+    { name: t.home, href: "#", id: "home" },
+    { name: t.services, href: "#services", id: "services" },
+    { name: t.benefits, href: "#benefits", id: "benefits" },
+    { name: t.stories, href: "#stories", id: "stories" },
+    { name: t.faq, href: "#faq", id: "faq" },
+    { name: t.contact, href: "#contact", id: "contact" },
   ];
 
   const languageNames = {
@@ -85,10 +120,27 @@ const Navbar = ({ lang, setLang }: { lang: Language, setLang: (l: Language) => v
     om: "Afaan Oromoo"
   };
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string, id: string) => {
+    e.preventDefault();
+    setActiveSection(id);
+    
+    if (href === "#") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      const element = document.querySelector(href);
+      if (element) {
+        const offset = 80; // navbar height offset
+        const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - offset;
+        window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+      }
+    }
+  };
+
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background/90 backdrop-blur-md shadow-sm py-4" : "bg-transparent py-6"}`}>
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <a href="#" onClick={(e) => handleNavClick(e, "#", "home")} className="flex items-center gap-2 cursor-pointer">
           <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl">
             M
           </div>
@@ -96,19 +148,31 @@ const Navbar = ({ lang, setLang }: { lang: Language, setLang: (l: Language) => v
             <span className={`font-heading font-bold text-xl leading-tight ${scrolled ? "text-primary" : "text-white"}`}>Maedot</span>
             <span className={`text-xs tracking-wider uppercase ${scrolled ? "text-foreground" : "text-white/80"}`}>{t.saccos}</span>
           </div>
-        </div>
+        </a>
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => (
-            <a 
-              key={link.name} 
-              href={link.href} 
-              className={`text-sm font-medium transition-colors hover:text-primary ${scrolled ? "text-foreground" : "text-white/90"}`}
-            >
-              {link.name}
-            </a>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = activeSection === link.id;
+            return (
+              <a 
+                key={link.name} 
+                href={link.href}
+                onClick={(e) => handleNavClick(e, link.href, link.id)}
+                className={`text-sm font-medium transition-all relative group ${
+                  isActive 
+                    ? "text-primary" 
+                    : scrolled ? "text-foreground hover:text-primary" : "text-white/90 hover:text-white"
+                }`}
+              >
+                {link.name}
+                {/* Active indicator */}
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300 ${
+                  isActive ? "w-full" : "w-0 group-hover:w-full"
+                }`}></span>
+              </a>
+            );
+          })}
           
           <div className="h-6 w-px bg-border/50 mx-2"></div>
           
@@ -149,15 +213,22 @@ const Navbar = ({ lang, setLang }: { lang: Language, setLang: (l: Language) => v
                   <Button variant={lang === "am" ? "default" : "outline"} size="sm" onClick={() => setLang("am")}>አማ</Button>
                   <Button variant={lang === "om" ? "default" : "outline"} size="sm" onClick={() => setLang("om")}>OM</Button>
                 </div>
-                {navLinks.map((link) => (
-                  <a 
-                    key={link.name} 
-                    href={link.href} 
-                    className="text-lg font-medium text-foreground hover:text-primary transition-colors"
-                  >
-                    {link.name}
-                  </a>
-                ))}
+                {navLinks.map((link) => {
+                  const isActive = activeSection === link.id;
+                  return (
+                    <a 
+                      key={link.name} 
+                      href={link.href}
+                      onClick={(e) => handleNavClick(e, link.href, link.id)}
+                      className={`text-lg font-medium transition-colors relative ${
+                        isActive ? "text-primary font-bold" : "text-foreground hover:text-primary"
+                      }`}
+                    >
+                      {link.name}
+                      {isActive && <span className="absolute -left-4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary"></span>}
+                    </a>
+                  );
+                })}
                 <Button className="w-full bg-primary hover:bg-primary/90">{t.join}</Button>
               </div>
             </SheetContent>
@@ -170,47 +241,74 @@ const Navbar = ({ lang, setLang }: { lang: Language, setLang: (l: Language) => v
 
 const Hero = ({ lang }: { lang: Language }) => {
   const t = translations[lang].hero;
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"]
+  });
+  
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
   
   return (
-    <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
-      {/* Background Image with Overlay */}
-      <div className="absolute inset-0 z-0">
+    <section ref={ref} className="relative h-screen flex items-center justify-center overflow-hidden">
+      {/* Background Image with Parallax */}
+      <motion.div style={{ y }} className="absolute inset-0 z-0">
         <img 
           src={heroImage} 
           alt="Addis Ababa Cityscape" 
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/20" />
-      </div>
+      </motion.div>
 
-      <div className="container mx-auto px-4 md:px-6 relative z-10 pt-20">
+      <motion.div style={{ opacity }} className="container mx-auto px-4 md:px-6 relative z-10">
         <motion.div 
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
           className="max-w-3xl"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/20 backdrop-blur-sm rounded-full border border-primary/30 mb-6">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-            <span className="text-primary-foreground font-bold text-sm tracking-wide uppercase">{t.tagline}</span>
-          </div>
-          <h1 className="text-5xl md:text-7xl font-heading font-bold mb-6 leading-tight text-white">
+          
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="text-5xl md:text-7xl font-heading font-bold mb-6 leading-tight text-white"
+          >
             {t.title}<br/>
             <span className="text-primary">{t.subtitle}</span>
-          </h1>
-          <p className="text-lg md:text-xl text-white/80 mb-8 leading-relaxed max-w-xl">
+          </motion.h1>
+          
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.7 }}
+            className="text-lg md:text-xl text-white/80 mb-8 leading-relaxed max-w-xl"
+          >
             {t.description}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4">
+          </motion.p>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.9 }}
+            className="flex flex-col sm:flex-row gap-4"
+          >
             <Button size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-8 h-14 text-lg font-semibold shadow-lg shadow-primary/20 transition-all hover:scale-105">
               {t.cta_primary}
             </Button>
             <Button variant="outline" size="lg" className="bg-white/5 hover:bg-white/10 text-white border-white/20 rounded-full px-8 h-14 text-lg font-medium backdrop-blur-sm transition-all">
               {t.cta_secondary}
             </Button>
-          </div>
+          </motion.div>
           
-          <div className="mt-12 flex items-center gap-8 text-white/60 text-sm font-medium">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1.1 }}
+            className="mt-12 flex items-center gap-8 text-white/60 text-sm font-medium"
+          >
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-primary" />
               <span>{t.licensed}</span>
@@ -219,15 +317,17 @@ const Hero = ({ lang }: { lang: Language }) => {
               <Users className="w-5 h-5 text-primary" />
               <span>{t.members}</span>
             </div>
-          </div>
+          </motion.div>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 };
 
 const Services = ({ lang }: { lang: Language }) => {
   const t = translations[lang].services;
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
   
   const services = [
     {
@@ -256,31 +356,110 @@ const Services = ({ lang }: { lang: Language }) => {
     }
   ];
 
-  return (
-    <section id="services" className="py-24 bg-secondary/30 dark:bg-secondary/10">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-primary font-bold tracking-wider uppercase text-sm mb-3">{t.title}</h2>
-          <h3 className="text-4xl font-heading font-bold text-foreground mb-4">{t.heading}</h3>
-          <p className="text-muted-foreground text-lg">
-            {t.subheading}
-          </p>
-        </div>
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.2
+      }
+    }
+  };
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    }
+  };
+
+  return (
+    <section id="services" className="py-24 bg-secondary/30 dark:bg-secondary/10 relative overflow-hidden">
+      {/* Animated background elements */}
+      <motion.div
+        animate={{
+          scale: [1, 1.2, 1],
+          rotate: [0, 90, 0],
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+        className="absolute top-20 right-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl"
+      />
+      
+      <div ref={ref} className="container mx-auto px-4 md:px-6 relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-2xl mx-auto mb-16"
+        >
+          <motion.h2 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-primary font-bold tracking-wider uppercase text-sm mb-3"
+          >
+            {t.title}
+          </motion.h2>
+          <motion.h3 
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-4xl font-heading font-bold text-foreground mb-4"
+          >
+            {t.heading}
+          </motion.h3>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-muted-foreground text-lg"
+          >
+            {t.subheading}
+          </motion.p>
+        </motion.div>
+
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        >
           {services.map((service, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-              viewport={{ once: true }}
+              variants={itemVariants}
+              whileHover={{ y: -8, transition: { duration: 0.3 } }}
             >
-              <Card className="h-full border-none shadow-md hover:shadow-xl transition-all duration-300 group overflow-hidden bg-card dark:bg-card">
+              <Card className="h-full border-none shadow-md hover:shadow-2xl transition-all duration-300 group overflow-hidden bg-card dark:bg-card">
                 <CardContent className="p-8 flex flex-col items-start gap-4 h-full relative z-10">
-                  <div className={`p-4 rounded-2xl mb-2 shadow-lg ${service.color} group-hover:scale-110 transition-transform duration-300`}>
+                  <motion.div 
+                    className={`p-4 rounded-2xl mb-2 shadow-lg ${service.color}`}
+                    whileHover={{ 
+                      scale: 1.1,
+                      transition: { duration: 0.3 }
+                    }}
+                    animate={{
+                      rotate: [0, -3, 3, -3, 0],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
                     {service.icon}
-                  </div>
+                  </motion.div>
                   <h4 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">{service.title}</h4>
                   <p className="text-muted-foreground leading-relaxed">
                     {service.description}
@@ -289,7 +468,7 @@ const Services = ({ lang }: { lang: Language }) => {
               </Card>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
@@ -297,6 +476,15 @@ const Services = ({ lang }: { lang: Language }) => {
 
 const WhyChooseUs = ({ lang }: { lang: Language }) => {
   const t = translations[lang].why;
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"]
+  });
+  
+  const imageY = useTransform(scrollYProgress, [0, 1], ["20%", "-20%"]);
+  const imageScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.95, 1.05, 0.95]);
   
   const benefits = [
     {
@@ -322,56 +510,126 @@ const WhyChooseUs = ({ lang }: { lang: Language }) => {
   ];
 
   return (
-    <section id="benefits" className="py-24 bg-background relative overflow-hidden">
+    <section id="benefits" ref={ref} className="py-24 bg-background relative overflow-hidden">
       {/* Background decoration */}
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
+      <motion.div 
+        animate={{
+          scale: [1, 1.3, 1],
+          x: [0, 50, 0],
+          y: [0, -50, 0],
+        }}
+        transition={{
+          duration: 25,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+        className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent"
+      />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-16">
-          <div className="lg:w-1/2">
-            <h2 className="text-primary font-bold tracking-wider uppercase text-sm mb-3">{t.title}</h2>
-            <h3 className="text-4xl md:text-5xl font-heading font-bold text-foreground mb-6">
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
+            transition={{ duration: 0.8 }}
+            className="lg:w-1/2"
+          >
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-primary font-bold tracking-wider uppercase text-sm mb-3"
+            >
+              {t.title}
+            </motion.h2>
+            <motion.h3 
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="text-4xl md:text-5xl font-heading font-bold text-foreground mb-6"
+            >
               {t.heading}
-            </h3>
-            <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
+            </motion.h3>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="text-muted-foreground text-lg mb-8 leading-relaxed"
+            >
               {t.description}
-            </p>
+            </motion.p>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {benefits.map((benefit, index) => (
-                <div key={index} className="flex gap-4 items-start p-4 rounded-xl hover:bg-secondary/50 transition-colors border border-transparent hover:border-border">
-                  <div className="p-2 bg-primary/10 rounded-lg shrink-0">
+                <motion.div 
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                  transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
+                  whileHover={{ scale: 1.05, x: 5 }}
+                  className="flex gap-4 items-start p-4 rounded-xl hover:bg-secondary/50 transition-colors border border-transparent hover:border-border cursor-pointer"
+                >
+                  <motion.div 
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ duration: 0.3 }}
+                    className="p-2 bg-primary/10 rounded-lg shrink-0"
+                  >
                     {benefit.icon}
-                  </div>
+                  </motion.div>
                   <div>
                     <h4 className="font-bold text-foreground mb-1">{benefit.title}</h4>
                     <p className="text-sm text-muted-foreground">{benefit.description}</p>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
           
-          <div className="lg:w-1/2 relative">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl border-8 border-white dark:border-white/10">
-              <img src={mobileBankingImage} alt="Mobile Banking Convenience" className="w-full h-auto transform hover:scale-105 transition-transform duration-700" />
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="lg:w-1/2 relative"
+          >
+            <motion.div 
+              style={{ y: imageY, scale: imageScale }}
+              className="relative rounded-2xl overflow-hidden shadow-2xl border-8 border-white dark:border-white/10"
+            >
+              <motion.img 
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.7 }}
+                src={mobileBankingImage} 
+                alt="Mobile Banking Convenience" 
+                className="w-full h-auto" 
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
-                <div className="text-white">
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                  transition={{ duration: 0.6, delay: 0.8 }}
+                  className="text-white"
+                >
                   <p className="font-bold text-xl">Digital Access</p>
                   <p className="text-white/80 text-sm">Manage finances from your phone</p>
-                </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
             
             {/* Floating badge */}
-            <div className="absolute -bottom-6 -left-6 bg-card p-6 rounded-xl shadow-xl border border-gray-100 dark:border-gray-800 max-w-[200px]">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={isInView ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.8, y: 20 }}
+              transition={{ duration: 0.6, delay: 1, type: "spring", bounce: 0.4 }}
+              whileHover={{ scale: 1.05 }}
+              className="absolute -bottom-6 -left-6 bg-card p-6 rounded-xl shadow-xl border border-gray-100 dark:border-gray-800 max-w-[200px]"
+            >
               <div className="flex items-center gap-2 mb-2">
                 <ThumbsUp className="w-5 h-5 text-primary fill-primary" />
                 <span className="font-bold text-foreground">{t.badge_title}</span>
               </div>
               <p className="text-xs text-muted-foreground">{t.badge_desc}</p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -380,6 +638,8 @@ const WhyChooseUs = ({ lang }: { lang: Language }) => {
 
 const SignupSteps = ({ lang }: { lang: Language }) => {
   const t = translations[lang].steps;
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
   
   const steps = [
     {
@@ -399,48 +659,129 @@ const SignupSteps = ({ lang }: { lang: Language }) => {
     }
   ];
 
+  const handleContactClick = () => {
+    const contactSection = document.getElementById("contact");
+    if (contactSection) {
+      const offset = 80;
+      const elementPosition = contactSection.getBoundingClientRect().top + window.scrollY;
+      const offsetPosition = elementPosition - offset;
+      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+    }
+  };
+
   return (
-    <section className="py-24 bg-foreground text-background">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-primary font-bold tracking-wider uppercase text-sm mb-3">{t.title}</h2>
-          <h3 className="text-3xl md:text-4xl font-heading font-bold mb-4 text-background">{t.heading}</h3>
-        </div>
+    <section ref={ref} className="py-24 bg-primary dark:bg-primary/95 relative overflow-hidden">
+      {/* Animated background */}
+      <motion.div
+        animate={{
+          scale: [1, 1.2, 1],
+          rotate: [0, -90, 0],
+        }}
+        transition={{
+          duration: 30,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+        className="absolute bottom-10 left-10 w-96 h-96 bg-white/5 dark:bg-black/10 rounded-full blur-3xl"
+      />
+      
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <motion.h2 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-white/90 font-bold tracking-wider uppercase text-sm mb-3"
+          >
+            {t.title}
+          </motion.h2>
+          <motion.h3 
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-3xl md:text-4xl font-heading font-bold mb-4 text-white"
+          >
+            {t.heading}
+          </motion.h3>
+        </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
           {/* Connector Line (Desktop) - Curved SVG */}
-          <div className="hidden md:block absolute top-12 left-0 w-full h-24 z-0 pointer-events-none">
+          <motion.div 
+            initial={{ opacity: 0, pathLength: 0 }}
+            animate={isInView ? { opacity: 1, pathLength: 1 } : { opacity: 0, pathLength: 0 }}
+            transition={{ duration: 1.5, delay: 0.5 }}
+            className="hidden md:block absolute top-12 left-0 w-full h-24 z-0 pointer-events-none"
+          >
             <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1000 100">
-              <path 
+              <motion.path 
                 d="M 166 50 C 333 50, 333 80, 500 50 C 666 20, 666 50, 833 50" 
                 fill="none" 
                 stroke="currentColor" 
                 strokeWidth="2" 
                 strokeDasharray="8 8" 
-                className="text-primary/30"
+                className="text-white/30"
+                initial={{ pathLength: 0 }}
+                animate={isInView ? { pathLength: 1 } : { pathLength: 0 }}
+                transition={{ duration: 2, delay: 0.6 }}
               />
             </svg>
-          </div>
+          </motion.div>
 
           {steps.map((step, index) => (
-            <div key={index} className="relative z-10 flex flex-col items-center text-center">
-              <div className="w-24 h-24 bg-secondary/10 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center text-3xl font-bold text-primary mb-6 shadow-lg shadow-black/20">
+            <motion.div 
+              key={index}
+              initial={{ opacity: 0, y: 50, scale: 0.8 }}
+              animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 50, scale: 0.8 }}
+              transition={{ 
+                duration: 0.6, 
+                delay: 0.4 + index * 0.2,
+                type: "spring",
+                bounce: 0.4
+              }}
+              onClick={handleContactClick}
+              className="relative z-10 flex flex-col items-center text-center cursor-pointer group"
+            >
+              <motion.div 
+                whileHover={{ 
+                  scale: 1.1,
+                  boxShadow: "0 20px 60px rgba(255, 255, 255, 0.2)"
+                }}
+                transition={{ duration: 0.3 }}
+                className="w-24 h-24 bg-white/20 dark:bg-white/10 backdrop-blur-sm border-2 border-white/40 group-hover:border-white/60 rounded-full flex items-center justify-center text-3xl font-bold text-white mb-6 shadow-lg transition-all"
+              >
                 {step.num}
-              </div>
-              <h4 className="text-xl font-bold mb-3 text-background">{step.title}</h4>
-              <p className="text-background/60 max-w-xs">{step.description}</p>
-            </div>
+              </motion.div>
+              <h4 className="text-xl font-bold mb-3 text-white group-hover:text-white/90 transition-colors">{step.title}</h4>
+              <p className="text-white/80 max-w-xs group-hover:text-white/90 transition-colors">{step.description}</p>
+            </motion.div>
           ))}
         </div>
 
-        <div className="mt-16 text-center">
-          <Button size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-10 h-14 text-lg">
-            {t.download}
-          </Button>
-          <p className="mt-4 text-sm text-background/40">
-            {t.question} <span className="text-primary cursor-pointer hover:underline">+251-0903373727</span>
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.6, delay: 1.2 }}
+          className="mt-16 text-center"
+        >
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button 
+              size="lg" 
+              onClick={handleContactClick}
+              className="bg-white hover:bg-white/90 text-primary rounded-full px-10 h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
+            >
+              {t.download}
+            </Button>
+          </motion.div>
+          <p className="mt-4 text-sm text-white/70">
+            {t.question} <a href="tel:+251903373727" className="text-white font-semibold cursor-pointer hover:underline transition-all">+251-0903373727</a>
           </p>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
@@ -448,51 +789,135 @@ const SignupSteps = ({ lang }: { lang: Language }) => {
 
 const Testimonials = ({ lang }: { lang: Language }) => {
   const t = translations[lang].stories;
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
   
+  const testimonials = [
+    {
+      story: t.story1,
+      name: "Tigist Alemu",
+      role: t.role1,
+      image: shopOwnerImage
+    },
+    {
+      story: t.story2,
+      name: "Abebe Kebede",
+      role: t.role2,
+      image: fatherDaughterImage
+    }
+  ];
+
   return (
-    <section id="stories" className="py-24 bg-secondary/30 dark:bg-secondary/10">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-primary font-bold tracking-wider uppercase text-sm mb-3">{t.title}</h2>
-          <h3 className="text-3xl md:text-4xl font-heading font-bold mb-4">{t.heading}</h3>
-        </div>
+    <section id="stories" ref={ref} className="py-24 bg-secondary/30 dark:bg-secondary/10 relative overflow-hidden">
+      {/* Animated background */}
+      <motion.div
+        animate={{
+          scale: [1, 1.4, 1],
+          x: [0, -100, 0],
+        }}
+        transition={{
+          duration: 35,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+        className="absolute top-20 left-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl"
+      />
+      
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <motion.h2 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-primary font-bold tracking-wider uppercase text-sm mb-3"
+          >
+            {t.title}
+          </motion.h2>
+          <motion.h3 
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-3xl md:text-4xl font-heading font-bold mb-4"
+          >
+            {t.heading}
+          </motion.h3>
+        </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          <Card className="border-none shadow-lg bg-card dark:bg-card">
-            <CardContent className="p-8">
-              <div className="flex gap-1 mb-4">
-                {[1,2,3,4,5].map(i => <ThumbsUp key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />)}
-              </div>
-              <p className="text-muted-foreground text-lg italic mb-6">
-                {t.story1}
-              </p>
-              <div className="flex items-center gap-4">
-                <img src={shopOwnerImage} alt="Shop Owner" className="w-12 h-12 rounded-full object-cover border-2 border-primary" />
-                <div>
-                  <h4 className="font-bold text-foreground">Tigist Alemu</h4>
-                  <p className="text-xs text-muted-foreground">{t.role1}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-none shadow-lg bg-card dark:bg-card">
-            <CardContent className="p-8">
-              <div className="flex gap-1 mb-4">
-                {[1,2,3,4,5].map(i => <ThumbsUp key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />)}
-              </div>
-              <p className="text-muted-foreground text-lg italic mb-6">
-                {t.story2}
-              </p>
-              <div className="flex items-center gap-4">
-                <img src={fatherDaughterImage} alt="Parent" className="w-12 h-12 rounded-full object-cover border-2 border-primary" />
-                <div>
-                  <h4 className="font-bold text-foreground">Abebe Kebede</h4>
-                  <p className="text-xs text-muted-foreground">{t.role2}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {testimonials.map((testimonial, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 50, rotateX: -15 }}
+              animate={isInView ? { opacity: 1, y: 0, rotateX: 0 } : { opacity: 0, y: 50, rotateX: -15 }}
+              transition={{ 
+                duration: 0.8, 
+                delay: 0.4 + index * 0.2,
+                type: "spring",
+                bounce: 0.3
+              }}
+              whileHover={{ y: -10, transition: { duration: 0.3 } }}
+            >
+              <Card className="border-none shadow-lg hover:shadow-2xl transition-shadow duration-300 bg-card dark:bg-card h-full">
+                <CardContent className="p-8">
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                    transition={{ duration: 0.6, delay: 0.6 + index * 0.2 }}
+                    className="flex gap-1 mb-4"
+                  >
+                    {[1,2,3,4,5].map(i => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
+                        transition={{ 
+                          duration: 0.3, 
+                          delay: 0.7 + index * 0.2 + i * 0.05,
+                          type: "spring",
+                          bounce: 0.6
+                        }}
+                      >
+                        <ThumbsUp className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                  
+                  <motion.p 
+                    initial={{ opacity: 0 }}
+                    animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                    transition={{ duration: 0.6, delay: 0.8 + index * 0.2 }}
+                    className="text-muted-foreground text-lg italic mb-6"
+                  >
+                    "{testimonial.story}"
+                  </motion.p>
+                  
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                    transition={{ duration: 0.6, delay: 1 + index * 0.2 }}
+                    className="flex items-center gap-4"
+                  >
+                    <motion.img 
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ duration: 0.3 }}
+                      src={testimonial.image} 
+                      alt={testimonial.name} 
+                      className="w-12 h-12 rounded-full object-cover border-2 border-primary" 
+                    />
+                    <div>
+                      <h4 className="font-bold text-foreground">{testimonial.name}</h4>
+                      <p className="text-xs text-muted-foreground">{testimonial.role}</p>
+                    </div>
+                  </motion.div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
@@ -500,42 +925,95 @@ const Testimonials = ({ lang }: { lang: Language }) => {
 };
 
 const FAQ = ({ lang }: { lang: Language }) => {
-  const t = translations[lang].nav;
+  const t = translations[lang].faq;
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  
+  const faqs = [
+    {
+      question: t.q1,
+      answer: t.a1
+    },
+    {
+      question: t.q2,
+      answer: t.a2
+    },
+    {
+      question: t.q3,
+      answer: t.a3
+    },
+    {
+      question: t.q4,
+      answer: t.a4
+    }
+  ];
   
   return (
-    <section id="faq" className="py-24 bg-background">
-      <div className="container mx-auto px-4 md:px-6 max-w-4xl">
-        <div className="text-center mb-12">
-          <h2 className="text-primary font-bold tracking-wider uppercase text-sm mb-3">{t.faq}</h2>
-          <h3 className="text-3xl md:text-4xl font-heading font-bold mb-4">Frequently Asked Questions</h3>
-        </div>
+    <section id="faq" ref={ref} className="py-24 bg-background relative overflow-hidden">
+      {/* Animated background */}
+      <motion.div
+        animate={{
+          scale: [1, 1.3, 1],
+          rotate: [0, 180, 0],
+        }}
+        transition={{
+          duration: 40,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+        className="absolute top-1/2 right-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl"
+      />
+      
+      <div className="container mx-auto px-4 md:px-6 max-w-4xl relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
+        >
+          <motion.h2 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-primary font-bold tracking-wider uppercase text-sm mb-3"
+          >
+            {t.title}
+          </motion.h2>
+          <motion.h3 
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-3xl md:text-4xl font-heading font-bold mb-4"
+          >
+            {t.heading}
+          </motion.h3>
+        </motion.div>
 
-        <Accordion type="single" collapsible className="w-full">
-          <AccordionItem value="item-1">
-            <AccordionTrigger className="text-lg font-medium">How do I become a member?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground text-base">
-              To become a member, simply visit our office with a valid ID and passport-sized photos. Fill out the application form, pay the registration fee, and make your initial deposit.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2">
-            <AccordionTrigger className="text-lg font-medium">What is the minimum saving amount?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground text-base">
-              We have flexible saving plans. Our regular savings account requires a minimum monthly contribution of 500 ETB, but you can save more as your capacity grows.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-3">
-            <AccordionTrigger className="text-lg font-medium">How long does loan processing take?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground text-base">
-              For emergency loans, processing can be done within 24 hours. Business and other larger loans typically take 3-5 working days after all documentation is submitted.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-4">
-            <AccordionTrigger className="text-lg font-medium">Can I access my money online?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground text-base">
-              Yes! We offer USSD mobile banking and a mobile app where you can check your balance, transfer funds, and even apply for small loans.
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <Accordion type="single" collapsible className="w-full">
+            {faqs.map((faq, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -30 }}
+                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
+                transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
+              >
+                <AccordionItem value={`item-${index + 1}`}>
+                  <AccordionTrigger className="text-lg font-medium hover:text-primary transition-colors">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground text-base">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              </motion.div>
+            ))}
+          </Accordion>
+        </motion.div>
       </div>
     </section>
   );
@@ -543,82 +1021,165 @@ const FAQ = ({ lang }: { lang: Language }) => {
 
 const Contact = ({ lang }: { lang: Language }) => {
   const t = translations[lang].contact;
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  
+  const contactInfo = [
+    {
+      icon: <Phone className="w-5 h-5" />,
+      title: t.phone,
+      lines: ["+251-0903373727", "+251-111111111"]
+    },
+    {
+      icon: <Building2 className="w-5 h-5" />,
+      title: t.location,
+      lines: ["Addis Ababa, Ethiopia", "Maedot Saccos HQ, Bole Road"]
+    },
+    {
+      icon: <Clock className="w-5 h-5" />,
+      title: t.hours,
+      lines: ["Mon - Fri: 8:00 AM - 5:00 PM", "Sat: 8:00 AM - 12:00 PM"]
+    }
+  ];
   
   return (
-    <section id="contact" className="py-24 bg-secondary/20 dark:bg-secondary/5">
-      <div className="container mx-auto px-4 md:px-6">
+    <section id="contact" ref={ref} className="py-24 bg-secondary/20 dark:bg-secondary/5 relative overflow-hidden">
+      {/* Animated background */}
+      <motion.div
+        animate={{
+          scale: [1, 1.5, 1],
+          rotate: [0, -180, 0],
+        }}
+        transition={{
+          duration: 45,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+        className="absolute bottom-0 left-1/3 w-96 h-96 bg-primary/5 rounded-full blur-3xl"
+      />
+      
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          <div>
-            <h2 className="text-4xl font-heading font-bold text-foreground mb-6">{t.title}</h2>
-            <p className="text-muted-foreground mb-8 text-lg">
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
+            transition={{ duration: 0.8 }}
+          >
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-4xl font-heading font-bold text-foreground mb-6"
+            >
+              {t.title}
+            </motion.h2>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="text-muted-foreground mb-8 text-lg"
+            >
               {t.subtitle}
-            </p>
+            </motion.p>
             
             <div className="space-y-8">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-white dark:bg-card rounded-full flex items-center justify-center text-primary shadow-sm border border-gray-100 dark:border-gray-800 flex-shrink-0">
-                  <Phone className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-foreground mb-1 text-lg">{t.phone}</h4>
-                  <p className="text-muted-foreground">+251-0903373727</p>
-                  <p className="text-muted-foreground">+251-111111111</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-white dark:bg-card rounded-full flex items-center justify-center text-primary shadow-sm border border-gray-100 dark:border-gray-800 flex-shrink-0">
-                  <Building2 className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-foreground mb-1 text-lg">{t.location}</h4>
-                  <p className="text-muted-foreground">Addis Ababa, Ethiopia</p>
-                  <p className="text-muted-foreground">Maedot Saccos HQ, Bole Road</p>
-                </div>
-              </div>
-
-               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-white dark:bg-card rounded-full flex items-center justify-center text-primary shadow-sm border border-gray-100 dark:border-gray-800 flex-shrink-0">
-                  <Clock className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-foreground mb-1 text-lg">{t.hours}</h4>
-                  <p className="text-muted-foreground">Mon - Fri: 8:00 AM - 5:00 PM</p>
-                  <p className="text-muted-foreground">Sat: 8:00 AM - 12:00 PM</p>
-                </div>
-              </div>
+              {contactInfo.map((info, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
+                  transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
+                  whileHover={{ x: 10, transition: { duration: 0.3 } }}
+                  className="flex items-start gap-4"
+                >
+                  <motion.div 
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-12 h-12 bg-white dark:bg-card rounded-full flex items-center justify-center text-primary shadow-sm border border-gray-100 dark:border-gray-800 flex-shrink-0"
+                  >
+                    {info.icon}
+                  </motion.div>
+                  <div>
+                    <h4 className="font-bold text-foreground mb-1 text-lg">{info.title}</h4>
+                    {info.lines.map((line, i) => (
+                      <p key={i} className="text-muted-foreground">{line}</p>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
             </div>
-          </div>
+          </motion.div>
 
-          <Card className="shadow-2xl border-none bg-card dark:bg-card">
-            <div className="h-2 bg-primary w-full"></div>
-            <CardContent className="p-8">
-              <h3 className="text-2xl font-bold mb-6">{t.form_title}</h3>
-              <form className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">{t.name_first}</label>
-                    <Input placeholder="John" className="h-11" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">{t.name_last}</label>
-                    <Input placeholder="Doe" className="h-11" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">{t.email}</label>
-                  <Input type="tel" placeholder="+251..." className="h-11" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">{t.message}</label>
-                  <Textarea placeholder="" className="min-h-[120px]" />
-                </div>
-                <Button className="w-full bg-primary hover:bg-primary/90 text-white h-12 text-base font-semibold">
-                  {t.send}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            <Card className="shadow-2xl border-none bg-card dark:bg-card hover:shadow-3xl transition-shadow duration-300">
+              <motion.div 
+                initial={{ scaleX: 0 }}
+                animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className="h-2 bg-primary w-full origin-left"
+              />
+              <CardContent className="p-8">
+                <motion.h3 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                  className="text-2xl font-bold mb-6"
+                >
+                  {t.form_title}
+                </motion.h3>
+                <form className="space-y-4">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                    transition={{ duration: 0.5, delay: 0.7 }}
+                    className="grid grid-cols-2 gap-4"
+                  >
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">{t.name_first}</label>
+                      <Input placeholder="John" className="h-11" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">{t.name_last}</label>
+                      <Input placeholder="Doe" className="h-11" />
+                    </div>
+                  </motion.div>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                    transition={{ duration: 0.5, delay: 0.8 }}
+                    className="space-y-2"
+                  >
+                    <label className="text-sm font-medium text-foreground">{t.email}</label>
+                    <Input type="tel" placeholder="+251..." className="h-11" />
+                  </motion.div>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                    transition={{ duration: 0.5, delay: 0.9 }}
+                    className="space-y-2"
+                  >
+                    <label className="text-sm font-medium text-foreground">{t.message}</label>
+                    <Textarea placeholder="" className="min-h-[120px]" />
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                    transition={{ duration: 0.5, delay: 1 }}
+                  >
+                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                      <Button className="w-full bg-primary hover:bg-primary/90 text-white h-12 text-base font-semibold">
+                        {t.send}
+                      </Button>
+                    </motion.div>
+                  </motion.div>
+                </form>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -670,19 +1231,19 @@ const Footer = ({ lang }: { lang: Language }) => {
           <div>
             <h4 className="font-bold text-background mb-6">{t.solutions}</h4>
             <ul className="space-y-3 text-sm">
-              <li><a href="#" className="hover:text-primary transition-colors">Fixed Deposits</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Business Loans</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Emergency Loans</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.fixed_deposits}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.business_loans}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.emergency_loans}</a></li>
             </ul>
           </div>
           
           <div>
             <h4 className="font-bold text-background mb-6">{t.savings_types}</h4>
             <ul className="space-y-3 text-sm">
-              <li><a href="#" className="hover:text-primary transition-colors">Voluntary Savings</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Compulsory Savings</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Child Savings</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Time Deposit</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.voluntary_savings}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.compulsory_savings}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.child_savings}</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">{t.time_deposit}</a></li>
             </ul>
           </div>
         </div>
@@ -697,11 +1258,120 @@ const Footer = ({ lang }: { lang: Language }) => {
   );
 };
 
+// Scroll Progress Indicator Component
+const ScrollProgress = () => {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
+  return (
+    <motion.div
+      className="fixed top-0 left-0 right-0 h-1 bg-primary origin-left z-[100]"
+      style={{ scaleX }}
+    />
+  );
+};
+
+// Scroll Indicator / Back to Top Button Component
+const ScrollIndicator = () => {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 500);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToNextSection = () => {
+    const servicesSection = document.getElementById("services");
+    if (servicesSection) {
+      const offset = 80;
+      const elementPosition = servicesSection.getBoundingClientRect().top + window.scrollY;
+      const offsetPosition = elementPosition - offset;
+      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+    }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    <>
+      {/* Scroll Down Indicator - Shows at hero */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: scrolled ? 0 : 1, y: scrolled ? -20 : 0 }}
+        transition={{ duration: 0.3 }}
+        className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 pointer-events-none"
+        style={{ display: scrolled ? 'none' : 'block' }}
+      >
+        <motion.button
+          onClick={scrollToNextSection}
+          className="pointer-events-auto flex flex-col items-center gap-2 text-white/80 hover:text-white transition-colors group"
+          animate={{
+            y: [0, 10, 0],
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <span className="text-sm font-medium tracking-wider">Scroll Down</span>
+          <div className="w-6 h-10 border-2 border-white/40 rounded-full flex items-start justify-center p-1 group-hover:border-white/60 transition-colors">
+            <motion.div
+              className="w-1.5 h-1.5 bg-white/80 rounded-full"
+              animate={{
+                y: [0, 12, 0],
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          </div>
+          <ChevronDown className="w-5 h-5" />
+        </motion.button>
+      </motion.div>
+
+      {/* Back to Top Button - Shows after scrolling */}
+      <motion.button
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ 
+          opacity: scrolled ? 1 : 0, 
+          scale: scrolled ? 1 : 0.8,
+          y: scrolled ? 0 : 20
+        }}
+        transition={{ duration: 0.3 }}
+        onClick={scrollToTop}
+        className="fixed bottom-8 right-8 z-40 w-12 h-12 bg-primary hover:bg-primary/90 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all group"
+        style={{ display: scrolled ? 'flex' : 'none' }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <ChevronDown className="w-6 h-6 rotate-180 group-hover:-translate-y-0.5 transition-transform" />
+      </motion.button>
+    </>
+  );
+};
+
 export default function Home() {
   const [lang, setLang] = useState<Language>("en");
   
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-primary/20 selection:text-primary transition-colors duration-300">
+      <ScrollProgress />
+      <ScrollIndicator />
       <Navbar lang={lang} setLang={setLang} />
       <Hero lang={lang} />
       <Services lang={lang} />

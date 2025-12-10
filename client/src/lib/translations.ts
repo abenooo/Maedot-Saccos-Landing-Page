@@ -18,7 +18,7 @@ export const translations = {
       cta_primary: "Join Maedot Today",
       cta_secondary: "Explore Our Services",
       licensed: "Licensed & Regulated",
-      members: "5,000+ Members"
+      members: "500+ Members"
     },
     services: {
       title: "Our Services",
@@ -81,11 +81,30 @@ export const translations = {
       email: "Phone Number",
       message: "Message"
     },
+    faq: {
+      title: "FAQ",
+      heading: "Frequently Asked Questions",
+      q1: "How do I become a member?",
+      a1: "To become a member, simply visit our office with a valid ID and passport-sized photos. Fill out the application form, pay the registration fee, and make your initial deposit.",
+      q2: "What is the minimum saving amount?",
+      a2: "We have flexible saving plans. Our regular savings account requires a minimum monthly contribution of 500 ETB, but you can save more as your capacity grows.",
+      q3: "How long does loan processing take?",
+      a3: "For emergency loans, processing can be done within 24 hours. Business and other larger loans typically take 3-5 working days after all documentation is submitted.",
+      q4: "Can I access my money online?",
+      a4: "Yes! We offer USSD mobile banking and a mobile app where you can check your balance, transfer funds, and even apply for small loans."
+    },
     footer: {
       desc: "Empowering our community through financial inclusion. Join us to save securely and borrow wisely.",
       company: "Company",
       solutions: "Solutions",
+      fixed_deposits: "Fixed Deposits",
+      business_loans: "Business Loans",
+      emergency_loans: "Emergency Loans",
       savings_types: "Saving Types",
+      voluntary_savings: "Voluntary Savings",
+      compulsory_savings: "Compulsory Savings",
+      child_savings: "Child Savings",
+      time_deposit: "Time Deposit",
       rights: "Maedot Saving & Credit Cooperatives Society LTD. Regulated by Federal Cooperative Agency."
     }
   },
@@ -108,7 +127,7 @@ export const translations = {
       cta_primary: "ሜዶትን ይቀላቀሉ",
       cta_secondary: "አገልግሎቶቻችንን ይመልከቱ",
       licensed: "ህጋዊ እና በቁጥጥር ስር",
-      members: "5,000+ አባላት"
+      members: "500+ አባላት"
     },
     services: {
       title: "አገልግሎቶቻችን",
@@ -171,11 +190,30 @@ export const translations = {
       email: "ስልክ ቁጥር",
       message: "መልእክት"
     },
+    faq: {
+      title: "ተደጋጋሚ ጥያቄዎች",
+      heading: "ተደጋጋሚ ጥያቄዎች",
+      q1: "እንዴት አባል መሆን እችላለሁ?",
+      a1: "አባል ለመሆን የማንነት መረጃ እና የፓስፖርት መጠን ያላቸው ፎቶዎች ይዘው ቢሮአችንን ይጎብኙ። የማመልከቻ ቅጹን ይሙሉ፣ የምዝገባ ክፍያ ይክፈሉ እና የመጀመሪያውን ተቀማጭ ያድርጉ።",
+      q2: "ዝቅተኛው የቁጠባ መጠን ምን ያህል ነው?",
+      a2: "ተለዋዋጭ የቁጠባ እቅዶች አሉን። መደበኛ የቁጠባ ሂሳባችን በወር ቢያንስ 500 ብር አስተዋጽኦ ይፈልጋል፣ ነገር ግን አቅምዎ እየጨመረ ሲሄድ የበለጠ መቆጠብ ይችላሉ።",
+      q3: "የብድር ሂደት ምን ያህል ጊዜ ይወስዳል?",
+      a3: "ለአደጋ ጊዜ ብድሮች በ24 ሰዓት ውስጥ ማስተናገድ ይቻላል። የንግድ እና ሌሎች ትላልቅ ብድሮች ሁሉም ሰነዶች ከቀረቡ በኋላ በተለምዶ ከ3-5 የስራ ቀናት ይወስዳሉ።",
+      q4: "ገንዘቤን በመስመር ላይ ማግኘት እችላለሁ?",
+      a4: "አዎ! ሂሳብዎን ለማረጋገጥ፣ ገንዘብ ለማስተላለፍ እና ትናንሽ ብድሮችን እንኳን ለማመልከት የUSSD የሞባይል ባንኪንግ እና የሞባይል መተግበሪያ እናቀርባለን።"
+    },
     footer: {
       desc: "ማህበረሰባችንን በፋይናንስ አካታችነት ማብቃት። በአስተማማኝ ሁኔታ ለመቆጠብ እና በብልሃት ለመበደር ይቀላቀሉን።",
       company: "ድርጅት",
       solutions: "መፍትሄዎች",
+      fixed_deposits: "ቋሚ ተቀማጭ",
+      business_loans: "የንግድ ብድር",
+      emergency_loans: "የአደጋ ጊዜ ብድር",
       savings_types: "የቁጠባ አይነቶች",
+      voluntary_savings: "ፈቃደኛ ቁጠባ",
+      compulsory_savings: "የግዴታ ቁጠባ",
+      child_savings: "የልጅ ቁጠባ",
+      time_deposit: "ጊዜያዊ ተቀማጭ",
       rights: "ሜዶት የቁጠባ እና ብድር ህብረት ስራ ማህበር። በፌዴራል ህብረት ስራ ኤጀንሲ የሚተዳደር።"
     }
   },
@@ -198,7 +236,7 @@ export const translations = {
       cta_primary: "Har'a Maedotitti Makamaa",
       cta_secondary: "Tajaajila Keenya Ilaalaa",
       licensed: "Seera Qabeessa & To'atamaa",
-      members: "Miseensota 5,000+"
+      members: "Miseensota 500+"
     },
     services: {
       title: "Tajaajila Keenya",
@@ -261,11 +299,30 @@ export const translations = {
       email: "Lakkoofsa Bilbilaa",
       message: "Ergaa"
     },
+    faq: {
+      title: "Gaaffii",
+      heading: "Gaaffilee Yeroo Baay'ee Gaafataman",
+      q1: "Akkamiin miseensa ta'uu danda'a?",
+      a1: "Miseensa ta'uuf, eenyummaa sirrii fi suuraa ukkaamsaa Paaspoortiitiin waajjira keenya daawwadhaa. Foomii iyyannoo guutuu, kaffaltii galmee kaffalaa fi kuufama jalqabaa keessan godhaa.",
+      q2: "Hamma qusannoo xiqqaa meeqa?",
+      a2: "Karoora qusannoo mijeessaa qabna. Herregni qusannoo idilee ji'aan xiqqaate qarshii 500 barbaachiisa, garuu dandeettiin keessan akka guddatuun dabalataan qusachuu dandeessu.",
+      q3: "Adeemsi liqii yeroo hammam fudhata?",
+      a3: "Liqiiwwan tasaa ta'aniif sa'aatii 24 keessatti raawwatamuu danda'a. Liqiiwwan daldalaa fi gurguddoon biroo erga ragaaleen hundi dhihaatanii booda guyyoota hojii 3-5 fudhatu.",
+      q4: "Maallaqa koo toora interneetiin argachuu danda'aa?",
+      a4: "Eeyyee! Herrega keessan mirkaneessuuf, maallaqa dabarsuuf, akkasumas liqiiwwan xixiqqoo illee iyyachuuf baankii moobaayilaa USSD fi appii moobaayilaa ni dhiyeessina."
+    },
     footer: {
       desc: "Hawaasa keenya hirmaannaa faayinaansiitiin humneessuu. Qusannoo amansiisaa fi liqii ogummaa qabuuf nutti makamaa.",
       company: "Kaampaanii",
       solutions: "Furmaata",
+      fixed_deposits: "Kuufama Dhaabbataa",
+      business_loans: "Liqii Daldaalaa",
+      emergency_loans: "Liqii Tasaa",
       savings_types: "Gosa Qusannoo",
+      voluntary_savings: "Qusannoo Fedhii",
+      compulsory_savings: "Qusannoo Dirqamaa",
+      child_savings: "Qusannoo Daa'immanii",
+      time_deposit: "Kuufama Yeroo",
       rights: "Waldaa Hojii Gamtaa Qusannoo fi Liqii Maedot. Ejensii Hojii Gamtaa Federaalaan kan to'atamu."
     }
   }
