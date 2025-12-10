@@ -371,7 +371,7 @@ const SignupSteps = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
           {/* Connector Line (Desktop) */}
-          <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-white/10 z-0"></div>
+          <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent z-0 border-t-2 border-dashed border-white/20"></div>
 
           {steps.map((step, index) => (
             <div key={index} className="relative z-10 flex flex-col items-center text-center">
@@ -622,14 +622,13 @@ const Footer = () => {
           </div>
           
           <div>
-            <h4 className="font-bold text-white mb-6">Partners</h4>
-            <div className="grid grid-cols-2 gap-4 opacity-50">
-               {/* Placeholders for partner logos */}
-               <div className="h-8 bg-white/20 rounded"></div>
-               <div className="h-8 bg-white/20 rounded"></div>
-               <div className="h-8 bg-white/20 rounded"></div>
-               <div className="h-8 bg-white/20 rounded"></div>
-            </div>
+            <h4 className="font-bold text-white mb-6">Saving Types</h4>
+            <ul className="space-y-3 text-sm">
+              <li><a href="#" className="hover:text-primary transition-colors">Voluntary Savings</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">Compulsory Savings</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">Child Savings</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">Time Deposit</a></li>
+            </ul>
           </div>
         </div>
         
