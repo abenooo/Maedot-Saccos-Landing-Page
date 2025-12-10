@@ -30,7 +30,14 @@
   --radius-xl: calc(var(--radius) + 4px);
 
   --font-sans: 'Inter', sans-serif;
-  --font-heading: 'Outfit', sans-serif;
+  --font-heading: 'Agbalumo Ethiopic', 'Outfit', sans-serif;
+}
+
+@font-face {
+  font-family: 'Agbalumo Ethiopic';
+  src: url('../../attached_assets/Agbalumo_Ethiopic_1765357316840.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
 }
 
 :root {
